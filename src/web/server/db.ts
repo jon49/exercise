@@ -20,18 +20,7 @@ interface DBAccessors {
     "updated": Updated
     "settings": Settings
     "exercises": Exercises
-    // [key: DateFormat]: WorkoutLog
 }
-
-// Too complex to represent in TS ☺
-// type Number = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-// type DayNumber = 0 | 1 | 2 | 3
-// type MonthNumber = 0 | 1
-//
-// type DateFormat = `2${Number}${Number}${Number}-${MonthNumber}${Number}-${DayNumber}${Number}`
-//
-// let test: DateFormat = "2021-01-01"
-// console.log(test)
 
 export { update, set, get, getMany, setMany }
 
