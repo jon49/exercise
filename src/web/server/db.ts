@@ -17,9 +17,10 @@ const set: DBSet<DBAccessors> & DBSetExtras = set1
 const update: DBUpdate<DBAccessors> & DBUpdateExtras = update1
 
 interface DBAccessors {
-    "updated": Updated
-    "settings": Settings
-    "exercises": Exercises
+    updated: Updated
+    settings: Settings
+    exercises: Exercises
+    workouts: Workout[]
 }
 
 export { update, set, get, getMany, setMany }
