@@ -4,9 +4,9 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "./tasks/start.nu dev",
-    "serve": "./tasks/start.nu server",
-    "build": "./tasks/start.nu prod",
+    "start": "bun ./tasks/start.ts dev",
+    "serve": "bun ./tasks/start.ts server",
+    "build": "bun ./tasks/start.ts prod",
     "check": "tsc --noEmit"
   },
   "author": "Jon Nyman",
@@ -24,7 +24,8 @@
   },
   "devDependencies": {
     "esbuild": "^0.19.5",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "@types/bun": "^1.0.0"
   }
 }
 

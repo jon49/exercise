@@ -1,10 +1,11 @@
 import "./routes.js"
-import links from "./entry-points.js"
+import links from "./file-map.js"
 import { version } from "./server/settings.js"
 import { ValidationResult } from "promise-validation"
 import { getResponse, options } from "@jon49/sw/routes.js"
 import { routes } from "./routes.js"
 
+// @ts-ignore
 self.addEventListener('message', async function (event) {
     if (event.data === "skipWaiting") {
         // @ts-ignore
@@ -12,6 +13,7 @@ self.addEventListener('message', async function (event) {
     }
 })
 
+// @ts-ignore
 self.addEventListener("install", (e: Event) => {
     console.log("Service worker installed.")
 
@@ -46,16 +48,20 @@ self.addEventListener("fetch", (e: FetchEvent) => {
 self.addEventListener("activate", async (e: ExtendableEvent) => {
     console.log("Service worker activated.")
 
+    // @ts-ignore
     let keys = await caches.keys(),
         deleteMe =
         keys
+        // @ts-ignore
         .map((x: string) => ((version !== x) && caches.delete(x)))
+        // @ts-ignore
         .filter(x => x)
     if (deleteMe.length === 0) return
     e.waitUntil(Promise.all(deleteMe))
 
 })
 
+// @ts-ignore
 self.addEventListener('message', event => {
     if (event.data.action === 'skipWaiting') {
         console.log("Skip waiting!")

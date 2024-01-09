@@ -1,5 +1,5 @@
 images
 public
 node_modules
-src/web/entry-points.ts
+src/web/file-map.ts
 
