@@ -4,6 +4,17 @@ import { version } from "./server/settings.js"
 import { ValidationResult } from "promise-validation"
 import { getResponse, options } from "@jon49/sw/routes.js"
 import { routes } from "./routes.js"
+import layout from "./pages/_layout.html.js"
+import * as db from "./server/db.js"
+import html from "html-template-tag-stream"
+
+let page = {
+    layout,
+    html,
+    db,
+}
+
+export type Page = typeof page
 
 self.addEventListener('message', async function (event) {
     if (event.data === "skipWaiting") {
@@ -37,6 +48,7 @@ self.addEventListener("fetch", (e: FetchEvent) => {
         options.version = version
         options.links = links
         options.routes = routes
+        options.page = page
     }
     e.respondWith(getResponse(e))
 })

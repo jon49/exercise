@@ -1,7 +1,8 @@
-import html from "html-template-tag-stream";
-import { get } from "../server/db.js";
+import { Page } from "../sw.js"
 import { Route } from "@jon49/sw/routes.js";
-import layout from "./_layout.html.js";
+
+// @ts-ignore
+const { html, layout, db: { get } } = <Page>page
 
 async function render() {
     let workouts = await get("workouts")
