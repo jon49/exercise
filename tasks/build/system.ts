@@ -2,7 +2,10 @@ import path from "node:path"
 import { readdir, stat, rm, cp, exists } from "node:fs/promises"
 import { Glob } from "bun"
 
-export async function findHashedFile(filename: string, ext: string, targetDirectory: string) {
+export async function findHashedFile(
+    filename: string,
+    ext: string,
+    targetDirectory: string) {
     if (!(await exists(`${targetDirectory}/${filename}`))) {
         return undefined
     }
