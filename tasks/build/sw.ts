@@ -1,6 +1,5 @@
 import { rm } from "node:fs/promises"
 import { Glob, write } from "bun"
-import { findHashedFile } from "./system"
 
 export async function handleSw(targetDirectory: string, isProd: boolean) {
     console.time("Building SW")
