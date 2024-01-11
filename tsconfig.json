@@ -5,7 +5,8 @@
     "moduleResolution": "nodenext",
     // normally this should be a key of "lib" but that doesn't work with Bun
     // types.
-    "types": ["webworker", "ES2020", "ES2021", "DOM", "DOM.Iterable"],
+    // @ts-ignore
+    "types": ["webworker", "ES2021", "DOM", "DOM.Iterable"],
 
     "strict": true,
     "noImplicitAny": true,
@@ -24,9 +25,6 @@
     "outDir": "./temp/sw",
     "skipLibCheck": true,
   },
-  "compileOnSave": true,
-  "include": ["src/**/*.ts", "src/**/*.js", "src/sw/js/lib/db.min.js"],
-  "exclude": [
-    "node_modules", "src/**/*spec.ts"
-  ]
+  "include": ["src/**/*.ts", "src/**/*.js" ],
+  "exclude": [ "node_modules" ]
 }

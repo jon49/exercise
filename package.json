@@ -7,7 +7,7 @@
     "start": "bun ./tasks/start.ts dev",
     "serve": "bun ./tasks/start.ts server",
     "build": "bun ./tasks/start.ts prod",
-    "check": "tsc --noEmit"
+    "check": "tsc --project tsconfig.noemit.json"
   },
   "author": "Jon Nyman",
   "license": "ISC",
