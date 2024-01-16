@@ -22,7 +22,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    "outDir": "./temp/sw",
     "skipLibCheck": true,
   },
   "include": ["src/**/*.ts", "src/**/*.js" ],
