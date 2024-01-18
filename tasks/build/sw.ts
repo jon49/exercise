@@ -7,6 +7,7 @@ export async function handleSw(targetDirectory: string, isProd: boolean) {
     let hashedSwGlob = new Glob("**/sw.*.js")
 
     for await (const file of hashedSwGlob.scan(targetDirectory)) {
+        console.log(`Removing ${file}`)
         await rm(`${targetDirectory}/${file}`)
     }
 
@@ -21,9 +22,11 @@ export async function handleSw(targetDirectory: string, isProd: boolean) {
     })
 
     for await (const hashedFile of hashedSwGlob.scan(targetDirectory)) {
+        console.log(`Writing ${hashedFile}`)
         await write(
             `${targetDirectory}/web/sw.js`,
-            `importScripts("/${hashedFile}")`)
+            `importScripts("/${hashedFile}");
+self._install("/${hashedFile}");`)
     }
 
     console.timeEnd("Building SW")

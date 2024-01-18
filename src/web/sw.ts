@@ -7,11 +7,14 @@ import { routes } from "./routes.js"
 import layout from "./pages/_layout.html.js"
 import * as db from "./server/db.js"
 import html from "html-template-tag-stream"
+import * as validation from "promise-validation"
+import * as validators from "@jon49/sw/validation.js"
 
 let page = {
     layout,
     html,
     db,
+    validation: { ...validation, ...validators }
 }
 
 export type Page = typeof page
@@ -23,16 +26,23 @@ self.addEventListener('message', async function (event) {
     }
 })
 
-self.addEventListener("install", (e: Event) => {
-    console.log("Service worker installed.")
+// @ts-ignore
+self._install =
+function install(serviceWorkerFilename: string) {
+    links.push({
+        url: "/web/sw.js",
+        file: serviceWorkerFilename
+    })
+    self.addEventListener("install", (e: Event) => {
+        console.log("Service worker installed.")
 
-    // @ts-ignore
-    e.waitUntil(caches.open(version).then(async cache => {
-        console.log("Caching files.")
-        return cache.addAll(links.map(x => x.file))
-    }))
-
-})
+        // @ts-ignore
+        e.waitUntil(caches.open(version).then(async cache => {
+            console.log("Caching files.")
+            return cache.addAll(links.map(x => x.file))
+        }))
+    })
+}
 
 function handleErrors(errors: any) {
     if (errors instanceof ValidationResult) {

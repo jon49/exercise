@@ -29,6 +29,7 @@ export async function fileMapper(targetDirectory: string): Promise<FileMapper[]>
             file: `/${x}`,
         }
     })
+    .filter(x => x.url !== "/web/sw.js")
 
     // Write mapper to file in src/web/file-map.js
     let fileMap = `export default ${JSON.stringify(mapper)}`
