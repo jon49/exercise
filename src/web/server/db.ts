@@ -39,8 +39,6 @@ export type DistanceUnit = typeof distanceUnit[number]
 export const weightUnit = ["Kilograms", "Pounds"] as const
 export type WeightUnit = typeof weightUnit[number]
 export type Unit = TimeUnit | DistanceUnit | WeightUnit
-export const difficulty = ["easy", "medium", "hard"] as const
-export type Difficulty = typeof difficulty[number]
 
 export type TypeToUnit<T extends Type> =
     T extends "Time"
@@ -78,14 +76,8 @@ export interface Measure extends TypeUnit {
     goal: number
 }
 
-export interface ExerciseName {
-    id: number
-    name: string
-    active: boolean
-}
-
 export interface Exercises {
-    exercise: ExerciseName[]
+    exercises: { id: number }[]
 }
 
 // Exercise template
@@ -93,8 +85,8 @@ export interface Exercise {
   id: number
   name: string
   description?: string
-  difficulty?: Difficulty
   measures?: Measure[]
+  active: boolean
 }
 
 // Define ExerciseLog interface
@@ -102,5 +94,11 @@ export interface WorkoutLog {
   workoutId: number // Reference to the exercise definition
   timestamp: Date // Timestamp for when the exercise was performed
   sets: [number, number, number][][] // [set => [exercise ID, exercise value, goal value][]]
+}
+
+export async function getExercises() {
+    let exerciseIds = (await get("exercises"))?.exercises || []
+    let exercises = await getMany(exerciseIds.map(x => ["exercise", x.id]))
+    return <Exercise[]>exercises
 }
 

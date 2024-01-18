@@ -3,7 +3,9 @@ import { Route } from "@jon49/sw/routes.js"
 
 export const routes : Route[] = [
     { route: /^\/web\/$/,
-      file: "/web/pages/index.page.js", },
+      file: "/web/pages/index.page.js" },
+    { route: /workouts\/edit\/$/,
+      file: "/web/pages/workouts/edit.page.js" },
     sync,
 ]
 
