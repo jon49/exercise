@@ -6,6 +6,8 @@ export const routes : Route[] = [
       file: "/web/pages/index.page.js" },
     { route: /workouts\/edit\/$/,
       file: "/web/pages/workouts/edit.page.js" },
+    { route: /\/exercises\/$/,
+      file: "/web/pages/exercises/edit.page.js" },
     sync,
 ]
 

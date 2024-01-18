@@ -1,6 +1,6 @@
-import { Workout } from "../../server/db.js";
+import { Exercise, Workout } from "../../server/db.js"
 import { Page } from "../../sw.js"
-import { RoutePage } from "@jon49/sw/routes.js";
+import { RoutePage } from "@jon49/sw/routes.js"
 
 const {
     html,
@@ -17,6 +17,14 @@ async function render() {
 <div id=workouts>
 ${workoutsView(workouts)}
 </div>
+${addNewWorkoutView(exercises)}
+    `
+}
+
+function addNewWorkoutView(exercises: Exercise[]) {
+    if (!exercises.length)
+        return html`<p>No exercises found. <a href="/web/exercises">Make one here.</a></p>`
+    return html`
 <form method=post action="/web/workouts/edit" hf-target="#workouts">
 <fieldset>
 <legend>New Workout</legend>
@@ -32,8 +40,7 @@ ${workoutsView(workouts)}
     </fieldset>
 </div>
 </fieldset>
-</form>
-    `
+</form>`
 }
 
 function workoutsView(workouts: Workout[] | undefined) {
