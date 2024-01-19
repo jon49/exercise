@@ -96,7 +96,7 @@ export interface WorkoutLog {
   sets: [number, number, number][][] // [set => [exercise ID, exercise value, goal value][]]
 }
 
-export async function getExercises() {
+export async function getAllExercises() {
     let exerciseIds = (await get("exercises"))?.exercises || []
     let exercises = await getMany(exerciseIds.map(x => ["exercise", x.id]))
     return <Exercise[]>exercises

@@ -5,14 +5,14 @@ import { RoutePage } from "@jon49/sw/routes.js"
 const {
     html,
     layout,
-    db: { get, getExercises }
+    db: { get, getAllExercises }
 } =
     // @ts-ignore
     <Page>page
 
 async function render() {
     let workouts = await get("workouts")
-    let exercises = await getExercises()
+    let exercises = await getAllExercises()
     return html`
 <div id=workouts>
 ${workoutsView(workouts)}
