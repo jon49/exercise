@@ -23,9 +23,11 @@ export async function cpAll(fromTo: [string, string][]) {
 
 export async function rmAll(targetDirectory: string, glob: Glob, predicate: (file: string) => boolean = () => true) {
     let files: string[] = []
-    for await (const file of glob.scan(targetDirectory)) {
-        if (predicate(file)) {
-            files.push(file)
+    if (await exists(targetDirectory)) {
+        for await (const file of glob.scan(targetDirectory)) {
+            if (predicate(file)) {
+                files.push(file)
+            }
         }
     }
     Promise.all(files.map(file => rm(`${targetDirectory}/${file}`)))

@@ -1,14 +1,14 @@
-import { Exercise, Workout } from "../../server/db.js"
+// import { Exercise, Workout } from "../../server/db.js"
 import { Page } from "../../sw.js"
 import { RoutePage } from "@jon49/sw/routes.js"
 
 const {
     html,
     layout,
-    db: { get, getExercises }
+    // db: { get, getAllExercises }
 } =
     // @ts-ignore
-    <Page>page
+    <Page>app
 
 async function render() {
     return html`yes`

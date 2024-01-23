@@ -8,7 +8,7 @@ const {
     db: { get, getAllExercises }
 } =
     // @ts-ignore
-    <Page>page
+    <Page>app
 
 async function render() {
     let workouts = await get("workouts")

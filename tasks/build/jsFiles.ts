@@ -2,52 +2,69 @@ import { Glob, file, write } from "bun"
 import { rmAll } from "./system"
 import path from "node:path"
 
-const pageGlob = new Glob("**/*.page.ts")
-
-let bundleFiles: string[] = []
-for await (const file of pageGlob.scan("./src")) {
-    bundleFiles.push(`./src/${file}`)
-}
-
-let staticFiles: string[] = []
-for await (const file of new Glob("**/js/*.{js,ts}").scan("./src")) {
-    if (file.includes(".bundle.")) {
-        bundleFiles.push(`./src/${file}`)
-    } else if (!path.basename(file).startsWith("_")) {
-        staticFiles.push(`./src/${file}`)
-    }
+function getBuildType(filename: string) {
+    let basename = path.basename(filename)
+    let shouldBundle =
+        [".bundle.", ".page.", "sw.", ".global."]
+        .some(x => basename.includes(x))
+    let isStatic = filename.startsWith("js/") || filename.includes("/js/") && !basename.startsWith("_")
+    let ignore = !shouldBundle && !isStatic
+    return ignore
+        ? "ignore"
+    : shouldBundle
+        ? "bundle"
+    : "static"
 }
 
 export async function buildJS(isProd: boolean, targetDirectory: string) {
     console.time("Building JS")
     // Remove old files
     let jsGlob = new Glob("**/*.js")
-    await rmAll(targetDirectory, jsGlob, filename =>
-            filename.includes(".bundle.")
-            || filename.includes(".page.")
-            || filename.includes("/js/"))
+    await rmAll(targetDirectory, jsGlob)
 
-    await Bun.build({
-        entrypoints: bundleFiles,
-        outdir: targetDirectory,
-        minify: isProd,
-        format: "esm",
-        naming: "[dir]/[name].[hash].[ext]",
-        root: "./src",
-        target: "browser",
-    })
+    let bundleFiles: string[] = []
+    let staticFiles: string[] = []
+    for await (const file of new Glob("**/*.{js,ts}").scan("./src")) {
+        switch (getBuildType(file)) {
+            case "ignore":
+                break
+            case "bundle":
+                bundleFiles.push(`./src/${file}`)
+                break
+            case "static":
+                staticFiles.push(`./src/${file}`)
+                break
+            default:
+                throw new Error(`Unknown build type for ${file}`)
+        }
+    }
 
-    await Bun.build({
-        entrypoints: staticFiles,
-        outdir: targetDirectory,
-        minify: isProd,
-        format: "esm",
-        naming: "[dir]/[name].[hash].[ext]",
-        root: "./src",
-        target: "browser",
-        external: ["*"],
-    })
+    if (bundleFiles.length) {
+        await Bun.build({
+            entrypoints: bundleFiles,
+            outdir: targetDirectory,
+            minify: isProd,
+            format: "esm",
+            naming: "[dir]/[name].[hash].[ext]",
+            root: "./src",
+            target: "browser",
+        })
+    }
 
+    if (staticFiles.length) {
+        await Bun.build({
+            entrypoints: staticFiles,
+            outdir: targetDirectory,
+            minify: isProd,
+            format: "esm",
+            naming: "[dir]/[name].[hash].[ext]",
+            root: "./src",
+            target: "browser",
+            external: ["*"],
+        })
+    }
+
+    // Change export default to return
     for await (const page of new Glob("**/*\\.page.*.js").scan(targetDirectory)) {
         let bunFile = file(`${targetDirectory}/${page}`)
         let content = await bunFile.text()

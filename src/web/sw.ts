@@ -1,14 +1,13 @@
-import "./routes.js"
-import links from "./file-map.js"
-import { version } from "./server/settings.js"
 import { ValidationResult } from "promise-validation"
 import { getResponse, options } from "@jon49/sw/routes.js"
-import { routes } from "./routes.js"
 import layout from "./pages/_layout.html.js"
 import * as db from "./server/db.js"
 import html from "html-template-tag-stream"
 import * as validation from "promise-validation"
 import * as validators from "@jon49/sw/validation.js"
+
+// @ts-ignore
+let version: string = self.app.version
 
 let page = {
     layout,
@@ -26,23 +25,16 @@ self.addEventListener('message', async function (event) {
     }
 })
 
-// @ts-ignore
-self._install =
-function install(serviceWorkerFilename: string) {
-    links.push({
-        url: "/web/sw.js",
-        file: serviceWorkerFilename
-    })
-    self.addEventListener("install", (e: Event) => {
-        console.log("Service worker installed.")
+self.addEventListener("install", (e: Event) => {
+    console.log("Service worker installed.")
 
+    // @ts-ignore
+    e.waitUntil(caches.open(version).then(async cache => {
+        console.log("Caching files.")
         // @ts-ignore
-        e.waitUntil(caches.open(version).then(async cache => {
-            console.log("Caching files.")
-            return cache.addAll(links.map(x => x.file))
-        }))
-    })
-}
+        return cache.addAll(self.app.links.map(x => x.file))
+    }))
+})
 
 function handleErrors(errors: any) {
     if (errors instanceof ValidationResult) {
@@ -53,11 +45,8 @@ function handleErrors(errors: any) {
 
 // @ts-ignore
 self.addEventListener("fetch", (e: FetchEvent) => {
-    if (!options.links) {
+    if (!options.handleErrors) {
         options.handleErrors = handleErrors
-        options.version = version
-        options.links = links
-        options.routes = routes
         options.page = page
     }
     e.respondWith(getResponse(e))
@@ -70,11 +59,12 @@ self.addEventListener("activate", async (e: ExtendableEvent) => {
     let keys = await caches.keys(),
         deleteMe =
         keys
-        .map((x: string) => ((version !== x) && caches.delete(x)))
+        .map((x: string) =>
+             ((version !== x)
+              && caches.delete(x)))
         .filter(x => x)
     if (deleteMe.length === 0) return
     e.waitUntil(Promise.all(deleteMe))
-
 })
 
 self.addEventListener('message', event => {
@@ -83,5 +73,5 @@ self.addEventListener('message', event => {
         // @ts-ignore
         return self.skipWaiting()
     }
-});
+})
 

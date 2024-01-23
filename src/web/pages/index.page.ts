@@ -2,7 +2,7 @@ import { Page } from "../sw.js"
 import { RoutePage } from "@jon49/sw/routes.js";
 
 // @ts-ignore
-const { html, layout, db: { get } } = <Page>page
+const { html, layout, db: { get } } = <Page>app
 
 async function render() {
     let workouts = await get("workouts")

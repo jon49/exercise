@@ -1,33 +1,31 @@
-import { rm } from "node:fs/promises"
-import { Glob, write } from "bun"
+import { Glob, write, file } from "bun"
 
-export async function handleSw(targetDirectory: string, isProd: boolean) {
+export async function handleSw(targetDirectory: string) {
     console.time("Building SW")
 
-    let hashedSwGlob = new Glob("**/sw.*.js")
-
-    for await (const file of hashedSwGlob.scan(targetDirectory)) {
-        console.log(`Removing ${file}`)
-        await rm(`${targetDirectory}/${file}`)
+    let swHashedFile = ""
+    for await (const x of new Glob("**/sw.*.js").scan(targetDirectory)) {
+        swHashedFile = x
+        let bunFile = file(`${targetDirectory}/${x}`)
+        let content = await bunFile.text()
+        if (!content.startsWith("(() => {")) {
+            await write(bunFile, `(() => {\n${content}\n})()`)
+        }
     }
 
-    await Bun.build({
-        entrypoints: ["./src/web/sw.ts"],
-        format: "esm",
-        minify: isProd,
-        naming: "[dir]/[name].[hash].[ext]",
-        outdir: targetDirectory,
-        root: "./src",
-        target: "browser",
-    })
-
-    for await (const hashedFile of hashedSwGlob.scan(targetDirectory)) {
-        console.log(`Writing ${hashedFile}`)
-        await write(
-            `${targetDirectory}/web/sw.js`,
-            `importScripts("/${hashedFile}");
-self._install("/${hashedFile}");`)
+    let fileMapperHashedFile = ""
+    for await (const x of new Glob("**/file-map.*.js").scan(targetDirectory)) {
+        fileMapperHashedFile = x
     }
+
+    let globals: string[] = []
+    for await (const x of new Glob("**/settings.global.*.js").scan(targetDirectory)) {
+        globals.push(x)
+    }
+
+    await write(
+        `${targetDirectory}/web/sw.js`,
+        `importScripts("/${fileMapperHashedFile}",${globals.map(x => `"/${x}"`).join(",")},"/${swHashedFile}")`)
 
     console.timeEnd("Building SW")
 }

@@ -33,7 +33,7 @@ await handlImages(targetDirectory)
 let mapper = await fileMapper(targetDirectory)
 let mappable = await getHTMLMappableFiles(mapper)
 await handleHTML(targetDirectory, mappable)
-await handleSw(targetDirectory, isProd)
+await handleSw(targetDirectory)
 console.timeEnd("Initializing")
 
 const srcWatcher = watch(
@@ -64,7 +64,7 @@ const srcWatcher = watch(
         }
 
         await fileMapper(targetDirectory)
-        await handleSw(targetDirectory, isProd)
+        await handleSw(targetDirectory)
     }
 )
 
