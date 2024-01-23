@@ -1,22 +1,8 @@
 import { ValidationResult } from "promise-validation"
 import { getResponse, options } from "@jon49/sw/routes.js"
-import layout from "./pages/_layout.html.js"
-import * as db from "./server/db.js"
-import html from "html-template-tag-stream"
-import * as validation from "promise-validation"
-import * as validators from "@jon49/sw/validation.js"
 
 // @ts-ignore
 let version: string = self.app.version
-
-let page = {
-    layout,
-    html,
-    db,
-    validation: { ...validation, ...validators }
-}
-
-export type Page = typeof page
 
 self.addEventListener('message', async function (event) {
     if (event.data === "skipWaiting") {
@@ -47,7 +33,6 @@ function handleErrors(errors: any) {
 self.addEventListener("fetch", (e: FetchEvent) => {
     if (!options.handleErrors) {
         options.handleErrors = handleErrors
-        options.page = page
     }
     e.respondWith(getResponse(e))
 })

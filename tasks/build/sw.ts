@@ -6,21 +6,19 @@ export async function handleSw(targetDirectory: string) {
     let swHashedFile = ""
     for await (const x of new Glob("**/sw.*.js").scan(targetDirectory)) {
         swHashedFile = x
-        let bunFile = file(`${targetDirectory}/${x}`)
-        let content = await bunFile.text()
-        if (!content.startsWith("(() => {")) {
-            await write(bunFile, `(() => {\n${content}\n})()`)
-        }
+        makeIife(x, targetDirectory)
     }
 
     let fileMapperHashedFile = ""
     for await (const x of new Glob("**/file-map.*.js").scan(targetDirectory)) {
         fileMapperHashedFile = x
+        makeIife(x, targetDirectory)
     }
 
     let globals: string[] = []
-    for await (const x of new Glob("**/settings.global.*.js").scan(targetDirectory)) {
+    for await (const x of new Glob("**/*\\.global.*.js").scan(targetDirectory)) {
         globals.push(x)
+        makeIife(x, targetDirectory)
     }
 
     await write(
@@ -29,3 +27,12 @@ export async function handleSw(targetDirectory: string) {
 
     console.timeEnd("Building SW")
 }
+
+async function makeIife(filename: string, targetDirectory: string) {
+    let bunFile = file(`${targetDirectory}/${filename}`)
+    let content = await bunFile.text()
+    if (!content.startsWith("(() => {")) {
+        await write(bunFile, `(() => {\n${content}\n})()`)
+    }
+}
+
